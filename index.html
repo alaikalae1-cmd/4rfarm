@@ -481,6 +481,196 @@
   }
 
   ::selection{ background:var(--data-gold-bg); }
+
+  /* ===== Tab bar (menu 3 halaman menyamping) ===== */
+  .tab-bar{
+    max-width:960px;
+    margin:0 auto;
+    padding:0 24px;
+    display:flex;
+    gap:4px;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    border-bottom:1px solid var(--line);
+  }
+  .tab-bar::-webkit-scrollbar{ display:none; }
+  .tab-btn{
+    flex:0 0 auto;
+    background:none;
+    border:none;
+    cursor:pointer;
+    font-family:'Inter', sans-serif;
+    color:var(--meta);
+    padding:14px 18px 13px;
+    font-size:14.5px;
+    font-weight:600;
+    white-space:nowrap;
+    border-bottom:2.5px solid transparent;
+    margin-bottom:-1px;
+    transition:color .15s ease;
+  }
+  .tab-btn .kicker{
+    display:block;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px;
+    font-weight:500;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--meta);
+    margin-bottom:2px;
+  }
+  .tab-btn.active{ color:var(--ink); border-bottom-color:var(--lab-green); }
+  .tab-btn.active .kicker{ color:var(--lab-green); }
+  .tab-btn:hover{ color:var(--ink); }
+
+  .tab-panel{ display:none; }
+  .tab-panel.active{ display:block; }
+  .tab-panel section.block:first-child{ border-top:none; }
+
+  /* ===== Floating order button ===== */
+  .order-fab{
+    position:fixed;
+    right:20px;
+    bottom:20px;
+    z-index:60;
+    background:var(--lab-green);
+    color:#fff;
+    border:none;
+    border-radius:999px;
+    padding:15px 22px;
+    font-family:'Inter', sans-serif;
+    font-size:14.5px;
+    font-weight:600;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    cursor:pointer;
+    box-shadow:0 6px 20px rgba(26,29,27,0.25);
+    transition:transform .15s ease, background .15s ease;
+  }
+  .order-fab:hover{ background:#28402F; transform:translateY(-1px); }
+  .order-fab .egg{ font-size:17px; }
+
+  /* ===== Order modal ===== */
+  .order-overlay{
+    position:fixed; inset:0;
+    background:rgba(26,29,27,0.45);
+    z-index:70;
+    display:none;
+    align-items:flex-end;
+    justify-content:center;
+  }
+  .order-overlay.open{ display:flex; }
+  @media (min-width:640px){
+    .order-overlay{ align-items:center; }
+  }
+  .order-sheet{
+    background:var(--paper);
+    width:100%;
+    max-width:480px;
+    max-height:88vh;
+    overflow-y:auto;
+    border-radius:18px 18px 0 0;
+    padding:28px 24px 32px;
+    position:relative;
+  }
+  @media (min-width:640px){
+    .order-sheet{ border-radius:14px; padding:32px; }
+  }
+  .order-close{
+    position:absolute;
+    top:18px; right:18px;
+    background:var(--paper-raised);
+    border:none;
+    width:30px; height:30px;
+    border-radius:50%;
+    font-size:16px;
+    color:var(--ink-soft);
+    cursor:pointer;
+  }
+  .order-eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    color:var(--lab-green);
+    letter-spacing:0.07em;
+    text-transform:uppercase;
+    margin-bottom:8px;
+  }
+  .order-sheet h3{
+    font-family:'Source Serif 4', serif;
+    font-size:23px;
+    font-weight:600;
+    margin:0 0 20px;
+    max-width:20ch;
+  }
+  .of-field{ margin-bottom:16px; }
+  .of-field label{
+    display:block;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:var(--meta);
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    margin-bottom:6px;
+  }
+  .of-field input, .of-field textarea{
+    width:100%;
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:11px 13px;
+    font-size:15px;
+    font-family:'Inter', sans-serif;
+    background:#fff;
+    color:var(--ink);
+  }
+  .of-field input:focus, .of-field textarea:focus{
+    outline:none; border-color:var(--lab-green);
+  }
+  .of-field textarea{ resize:vertical; min-height:60px; }
+  .of-required{ color:#B3261E; }
+  .of-toggle-row{ display:flex; gap:8px; }
+  .of-toggle{
+    flex:1;
+    border:1px solid var(--line);
+    background:#fff;
+    color:var(--ink-soft);
+    padding:11px 8px;
+    border-radius:8px;
+    font-size:13.5px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .of-toggle.active{
+    border-color:var(--lab-green);
+    background:var(--lab-green-soft);
+    color:var(--lab-green);
+  }
+  .of-submit{
+    width:100%;
+    background:var(--lab-green);
+    color:#fff;
+    border:none;
+    border-radius:9px;
+    padding:14px;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+    margin-top:6px;
+  }
+  .of-submit:disabled{ opacity:0.55; cursor:default; }
+  .of-note{ font-size:12.5px; color:var(--meta); margin-top:10px; }
+  .of-result{
+    margin-top:16px;
+    padding:14px 16px;
+    border-radius:9px;
+    font-size:14px;
+    display:none;
+  }
+  .of-result.show{ display:block; }
+  .of-result.ok{ background:var(--lab-green-soft); color:var(--lab-green); }
+  .of-result.err{ background:#FBEAE8; color:#B3261E; }
+  .of-result.pending{ background:var(--data-gold-bg); color:var(--data-gold); }
 </style>
 <meta content="index,follow,max-image-preview:large" name="robots"/><meta content="4R Farm Knowledge Center" name="author"/><meta content="#33503B" name="theme-color"/><meta content="Hasil Uji Laboratorium Telur Omega 3 4R Farm" property="og:title"/><meta content="Halaman transparansi hasil uji laboratorium LPPT UGM yang dapat diverifikasi." property="og:description"/><meta content="website" property="og:type"/><link href="https://4rfarm.github.io/" rel="canonical"/></head>
 <body>
@@ -495,9 +685,9 @@
 <div class="brand-tag">Pusat Data &amp; Verifikasi — Jombang, Jawa Timur</div>
 </div>
 <nav>
-<a href="#data-uji">Data Uji</a>
-<a href="#faq">Tanya Jawab</a>
-<a href="#verifikasi">Verifikasi</a>
+<a href="#data-uji" onclick="return gotoTab('data-uji', event)">Data Uji</a>
+<a href="#faq" onclick="return gotoTab('faq', event)">Tanya Jawab</a>
+<a href="#verifikasi" onclick="return gotoTab('verifikasi', event)">Verifikasi</a>
 </nav>
 </div>
 </header>
@@ -536,6 +726,12 @@
   </a>
 <div class="verify-note">Dokumen dihosting langsung di portal resmi UGM (market.ugm.ac.id) — bukan hasil unggahan ulang.</div>
 <div style="margin-top:24px;padding:16px;border:1px solid #ccc;border-radius:8px;background:#f8f8f8"><h3>Evidence Summary</h3><ul><li>Laboratorium: LPPT UGM</li><li>Status: Third-party tested</li><li>Verifikasi: PDF resmi UGM</li><li>Metode: Kromatografi Gas</li><li>Nomor Sertifikat: 1148/UN1/LPPT/TR/2026</li></ul></div></section>
+<div class="tab-bar" role="tablist">
+<button class="tab-btn active" data-tab="data-uji" onclick="gotoTab('data-uji')"><span class="kicker">Bagian A–B</span>Data Uji</button>
+<button class="tab-btn" data-tab="faq" onclick="gotoTab('faq')"><span class="kicker">Bagian C</span>Tanya Jawab</button>
+<button class="tab-btn" data-tab="verifikasi" onclick="gotoTab('verifikasi')"><span class="kicker">Bagian D</span>Verifikasi</button>
+</div>
+<div class="tab-panel active" id="panel-data-uji">
 <section class="block" id="data-uji">
 <div class="block-head">
 <div class="block-kicker">Bagian A</div>
@@ -621,6 +817,8 @@
 <p>DHA (docosahexaenoic acid) adalah salah satu jenis asam lemak Omega-3 rantai panjang. Rasio Omega-6 terhadap Omega-3 sering dipakai sebagai salah satu indikator profil lemak dalam bahan pangan; rasio yang lebih rendah umumnya menunjukkan proporsi Omega-3 yang relatif lebih besar dibanding profil lemak konvensional. Data pada halaman ini adalah hasil pengukuran laboratorium terhadap satu sampel pada tanggal pengujian tercantum, bukan pernyataan medis atau klaim gizi yang berlaku untuk setiap butir telur yang diproduksi.</p>
 <p style="color:var(--meta); font-size:14px;">Untuk kebutuhan gizi spesifik (kehamilan, anak-anak, kondisi medis tertentu), konsultasikan dengan dokter atau ahli gizi.</p>
 </section>
+</div>
+<div class="tab-panel" id="panel-faq">
 <section class="block" id="faq">
 <div class="block-head">
 <div class="block-kicker">Bagian C</div>
@@ -658,6 +856,8 @@
 </div>
 </div>
 </section>
+</div>
+<div class="tab-panel" id="panel-verifikasi">
 <section class="block" id="verifikasi">
 <div class="block-head">
 <div class="block-kicker">Bagian D</div>
@@ -732,10 +932,57 @@ NIP. 198404232012121001
 </div>
 </div>
 </section>
+</div>
 <footer>
 <span>4R Farm — Dsn. Ngemplak, Ds. Pagerwojo, Perak, Jombang, Jawa Timur</span>
 <span>Data uji: LPPT UGM, Sertifikat No. 1148/UN1/LPPT/TR/2026</span>
 </footer>
+
+<!-- ===== Floating order button ===== -->
+<button class="order-fab" onclick="openOrderForm()"><span class="egg">🥚</span> Pesan Telur</button>
+
+<!-- ===== Order modal ===== -->
+<div class="order-overlay" id="order-overlay" onclick="if(event.target===this) closeOrderForm()">
+<div class="order-sheet">
+<button class="order-close" onclick="closeOrderForm()">✕</button>
+<div class="order-eyebrow">Pemesanan Langsung</div>
+<h3>Pesan telur 4R Farm</h3>
+<div class="of-field">
+<label>Nama Pembeli <span class="of-required">*</span></label>
+<input id="of-nama" type="text" placeholder="Nama Anda" autocomplete="name"/>
+</div>
+<div class="of-field">
+<label>No. WhatsApp <span class="of-required">*</span> — wajib diisi</label>
+<input id="of-wa" type="tel" placeholder="Contoh: 081234567890" autocomplete="tel"/>
+</div>
+<div class="of-field">
+<label>Jenis Telur</label>
+<div class="of-toggle-row">
+<button type="button" class="of-toggle active" id="of-jenis-horn" onclick="setOfJenis('horn')">🐔 Horn</button>
+<button type="button" class="of-toggle" id="of-jenis-elba" onclick="setOfJenis('elba')">🐔 Kampung</button>
+</div>
+</div>
+<div class="of-field">
+<label>Satuan</label>
+<div class="of-toggle-row">
+<button type="button" class="of-toggle active" id="of-satuan-butir" onclick="setOfSatuan('butir')">Butir</button>
+<button type="button" class="of-toggle" id="of-satuan-pack" onclick="setOfSatuan('pack')">Pack (1 pack = 10 butir)</button>
+</div>
+</div>
+<div class="of-field">
+<label id="of-label-jumlah">Jumlah (butir)</label>
+<input id="of-jumlah" type="number" min="1" placeholder="Jumlah"/>
+</div>
+<div class="of-field">
+<label>Catatan (opsional)</label>
+<textarea id="of-catatan" placeholder="Contoh: tanggal ambil, alamat, dsb."></textarea>
+</div>
+<button class="of-submit" id="of-submit-btn" onclick="submitOrderForm()">Cek Estimasi &amp; Kirim Pesanan</button>
+<div class="of-result" id="of-result"></div>
+<div class="of-note">Pesanan akan dikonfirmasi langsung oleh 4R Farm lewat WhatsApp sebelum masuk antrian produksi.</div>
+</div>
+</div>
+
 <script>
   document.querySelectorAll('.faq-item').forEach(item => {
     item.querySelector('.faq-q').addEventListener('click', () => {
@@ -743,6 +990,173 @@ NIP. 198404232012121001
       item.classList.toggle('open', !isOpen);
     });
   });
+
+  // ===================================================================
+  // TAB NAVIGATION (3 menu menyamping: Data Uji / Tanya Jawab / Verifikasi)
+  // ===================================================================
+  function gotoTab(tabId, evt){
+    if (evt) evt.preventDefault();
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    const panel = document.getElementById('panel-' + tabId);
+    const btn = document.querySelector('.tab-btn[data-tab="' + tabId + '"]');
+    if (panel) panel.classList.add('active');
+    if (btn) btn.classList.add('active');
+    if (history.replaceState) history.replaceState(null, '', '#' + tabId);
+    window.scrollTo({ top: document.querySelector('.tab-bar').offsetTop - 10, behavior: 'smooth' });
+    return false;
+  }
+  // Buka tab sesuai hash URL saat halaman pertama dimuat (mis. dibagikan link #faq)
+  (function initTabFromHash(){
+    const validTabs = ['data-uji', 'faq', 'verifikasi'];
+    const hash = (location.hash || '').replace('#', '');
+    if (validTabs.includes(hash)) gotoTab(hash);
+  })();
+
+  // ===================================================================
+  // FLOATING ORDER FORM — terhubung ke backend Google Apps Script (index 3)
+  // ===================================================================
+  // URL ini HARUS sama persis dengan API_URL yang dipakai di aplikasi pencatatan (index 3).
+  // TIDAK memakai PIN sama sekali (lihat catatan keamanan di Code.gs) — hanya action
+  // 'estimasi' (baca angka agregat) dan 'submitOrder' (nambah 1 baris ke po_web_masuk)
+  // yang bisa diakses dari sini.
+  const ORDER_API_URL = 'https://script.google.com/macros/s/AKfycbzIfbMF40XVBCqVPfdK5af3giHQwXSRr0p_hLDvjimVmu6vKPbPjqRIamfDABiXBS00/exec';
+
+  let ofJenisAktif = 'horn';
+  let ofSatuanAktif = 'butir';
+  let ofSudahKirim = false;
+
+  function openOrderForm(){
+    document.getElementById('order-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeOrderForm(){
+    document.getElementById('order-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function setOfJenis(j){
+    ofJenisAktif = j;
+    document.getElementById('of-jenis-horn').classList.toggle('active', j === 'horn');
+    document.getElementById('of-jenis-elba').classList.toggle('active', j === 'elba');
+  }
+  function setOfSatuan(s){
+    ofSatuanAktif = s;
+    document.getElementById('of-satuan-butir').classList.toggle('active', s === 'butir');
+    document.getElementById('of-satuan-pack').classList.toggle('active', s === 'pack');
+    document.getElementById('of-label-jumlah').textContent = s === 'butir' ? 'Jumlah (butir)' : 'Jumlah (pack)';
+  }
+
+  function showOfResult(kind, html){
+    const el = document.getElementById('of-result');
+    el.className = 'of-result show ' + kind;
+    el.innerHTML = html;
+  }
+
+  function isApiConfigured(){
+    return ORDER_API_URL && ORDER_API_URL.indexOf('PASTE_URL') === -1;
+  }
+
+  // Ambil estimasi lewat JSONP (menghindari blokir CORS Apps Script, sama seperti index 3)
+  function ambilEstimasi(jenis, jumlah, satuan){
+    return new Promise((resolve) => {
+      if (!isApiConfigured()){ resolve({ ok:false, error:'Belum tersambung ke server.' }); return; }
+      const cbName = 'estimasi_cb_' + Date.now();
+      const script = document.createElement('script');
+      const timeout = setTimeout(() => { cleanup(); resolve({ ok:false, error:'Timeout mengambil estimasi.' }); }, 12000);
+      function cleanup(){ clearTimeout(timeout); delete window[cbName]; if (script.parentNode) script.parentNode.removeChild(script); }
+      window[cbName] = function(json){ cleanup(); resolve(json); };
+      script.src = ORDER_API_URL + '?action=estimasi&jenis=' + encodeURIComponent(jenis) +
+        '&jumlah=' + encodeURIComponent(jumlah) + '&satuan=' + encodeURIComponent(satuan) +
+        '&callback=' + cbName + '&_=' + Date.now();
+      script.onerror = () => { cleanup(); resolve({ ok:false, error:'Koneksi ke server gagal.' }); };
+      document.body.appendChild(script);
+    });
+  }
+
+  // Kirim pesanan lewat hidden iframe + form POST (bypass CORS, sama seperti index 3).
+  // Tidak bisa membaca isi respons karena beda origin — jadi anggap terkirim begitu iframe selesai load.
+  function kirimOrder(payload){
+    return new Promise((resolve) => {
+      const iframeName = 'order_frame_' + Date.now();
+      const iframe = document.createElement('iframe');
+      iframe.name = iframeName;
+      iframe.style.display = 'none';
+      document.body.appendChild(iframe);
+
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = ORDER_API_URL + '?action=submitOrder';
+      form.target = iframeName;
+
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'payload';
+      input.value = JSON.stringify(payload);
+      form.appendChild(input);
+      document.body.appendChild(form);
+
+      let finished = false;
+      function finish(success){
+        if (finished) return;
+        finished = true;
+        if (form.parentNode) form.parentNode.removeChild(form);
+        setTimeout(() => { if (iframe.parentNode) iframe.parentNode.removeChild(iframe); }, 3000);
+        resolve(success);
+      }
+      const timeout = setTimeout(() => finish(true), 15000); // anggap terkirim kalau timeout (jaringan lambat)
+      iframe.onload = () => { clearTimeout(timeout); finish(true); };
+      iframe.onerror = () => { clearTimeout(timeout); finish(false); };
+      form.submit();
+    });
+  }
+
+  async function submitOrderForm(){
+    if (ofSudahKirim) return; // cegah klik ganda setelah berhasil kirim
+
+    const nama = document.getElementById('of-nama').value.trim();
+    const wa = document.getElementById('of-wa').value.trim();
+    const jumlah = parseInt(document.getElementById('of-jumlah').value, 10) || 0;
+    const catatan = document.getElementById('of-catatan').value.trim();
+
+    if (!nama){ showOfResult('err', 'Nama pembeli wajib diisi.'); return; }
+    if (!wa || wa.replace(/[^0-9+]/g,'').length < 8){ showOfResult('err', 'No. WhatsApp wajib diisi dengan benar (ini satu-satunya cara 4R Farm menghubungi Anda untuk konfirmasi).'); return; }
+    if (jumlah <= 0){ showOfResult('err', 'Jumlah pesanan tidak valid.'); return; }
+
+    const btn = document.getElementById('of-submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Mengecek estimasi...';
+    showOfResult('pending', 'Menghitung estimasi ketersediaan stok...');
+
+    const estimasi = await ambilEstimasi(ofJenisAktif, jumlah, ofSatuanAktif);
+    if (!estimasi.ok){
+      showOfResult('err', 'Gagal mengambil estimasi: ' + (estimasi.error || 'terjadi kesalahan') + '. Coba lagi sebentar lagi.');
+      btn.disabled = false; btn.textContent = 'Cek Estimasi & Kirim Pesanan';
+      return;
+    }
+
+    btn.textContent = 'Mengirim pesanan...';
+    showOfResult('pending', '📋 ' + estimasi.data.estimasiTeks + '<br><br>Mengirim pesanan ke 4R Farm...');
+
+    const terkirim = await kirimOrder({
+      nama: nama,
+      wa: wa,
+      jenis: ofJenisAktif,
+      satuan: ofSatuanAktif,
+      jumlah: jumlah,
+      catatan: catatan
+    });
+
+    if (terkirim){
+      ofSudahKirim = true;
+      btn.textContent = 'Pesanan Terkirim ✓';
+      showOfResult('ok', '✅ Pesanan diterima.<br>📋 ' + estimasi.data.estimasiTeks +
+        '<br><br>4R Farm akan menghubungi Anda lewat WhatsApp (' + wa + ') untuk konfirmasi sebelum pesanan masuk antrian produksi.');
+    } else {
+      btn.disabled = false;
+      btn.textContent = 'Cek Estimasi & Kirim Pesanan';
+      showOfResult('err', 'Gagal mengirim pesanan. Coba lagi, atau hubungi 4R Farm langsung lewat WhatsApp.');
+    }
+  }
 </script>
 </body>
 </html>
