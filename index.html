@@ -977,8 +977,9 @@ NIP. 198404232012121001
 <label>Catatan (opsional)</label>
 <textarea id="of-catatan" placeholder="Contoh: tanggal ambil, alamat, dsb."></textarea>
 </div>
-<button class="of-submit" id="of-submit-btn" onclick="submitOrderForm()">Cek Estimasi &amp; Kirim Pesanan</button>
+<button class="of-submit" id="of-check-btn" onclick="cekEstimasiForm()">🔍 Cek Ketersediaan &amp; Estimasi</button>
 <div class="of-result" id="of-result"></div>
+<button class="of-submit" id="of-submit-btn" onclick="submitOrderForm()" style="display:none; margin-top:10px; background:#2E7D32;">✅ Pesan Sekarang</button>
 <div class="of-note">Pesanan akan dikonfirmasi langsung oleh 4R Farm lewat WhatsApp sebelum masuk antrian produksi.</div>
 </div>
 </div>
@@ -1025,31 +1026,81 @@ NIP. 198404232012121001
   let ofJenisAktif = 'horn';
   let ofSatuanAktif = 'butir';
   let ofSudahKirim = false;
+  let ofSudahCekEstimasi = false;
+  let ofEstimasiData = null;
 
   function openOrderForm(){
     document.getElementById('order-overlay').classList.add('open');
     document.body.style.overflow = 'hidden';
+    resetOfEstimasiState();
   }
   function closeOrderForm(){
     document.getElementById('order-overlay').classList.remove('open');
     document.body.style.overflow = '';
   }
+
+  // Reset status "sudah cek estimasi" tiap kali jenis/satuan/jumlah berubah, supaya pembeli
+  // tidak bisa langsung "Pesan Sekarang" pakai estimasi yang sudah tidak sesuai lagi.
+  function resetOfEstimasiState(){
+    ofSudahCekEstimasi = false;
+    ofEstimasiData = null;
+    ofSudahKirim = false;
+    const checkBtn = document.getElementById('of-check-btn');
+    const submitBtn = document.getElementById('of-submit-btn');
+    checkBtn.style.display = 'block';
+    checkBtn.disabled = false;
+    checkBtn.textContent = '🔍 Cek Ketersediaan & Estimasi';
+    submitBtn.style.display = 'none';
+    submitBtn.disabled = false;
+    submitBtn.textContent = '✅ Pesan Sekarang';
+    document.getElementById('of-result').className = 'of-result';
+    document.getElementById('of-result').innerHTML = '';
+  }
+
   function setOfJenis(j){
     ofJenisAktif = j;
     document.getElementById('of-jenis-horn').classList.toggle('active', j === 'horn');
     document.getElementById('of-jenis-elba').classList.toggle('active', j === 'elba');
+    resetOfEstimasiState();
   }
   function setOfSatuan(s){
     ofSatuanAktif = s;
     document.getElementById('of-satuan-butir').classList.toggle('active', s === 'butir');
     document.getElementById('of-satuan-pack').classList.toggle('active', s === 'pack');
     document.getElementById('of-label-jumlah').textContent = s === 'butir' ? 'Jumlah (butir)' : 'Jumlah (pack)';
+    resetOfEstimasiState();
   }
 
   function showOfResult(kind, html){
     const el = document.getElementById('of-result');
     el.className = 'of-result show ' + kind;
     el.innerHTML = html;
+  }
+
+  // Jumlah berubah setelah estimasi dicek -> minta cek ulang, supaya pembeli tidak
+  // "Pesan Sekarang" dengan jumlah yang beda dari yang diestimasikan.
+  document.getElementById('of-jumlah').addEventListener('input', () => {
+    if (ofSudahCekEstimasi) resetOfEstimasiState();
+  });
+
+  // Ringkas teks estimasi dari server untuk ditampilkan ke PEMBELI: sengaja HANYA menampilkan
+  // estimasi hari (ditebalkan), jumlah butir kekurangan disembunyikan. Ini supaya keputusan
+  // "Pesan Sekarang" murni berdasarkan lama tunggu, bukan angka butir yang bisa bikin
+  // salah pencet/salah kira soal jumlah pesanan.
+  function ringkasEstimasiUntukPembeli(teks){
+    if (!teks) return '';
+    const hariMatch = teks.match(/(\d+)\s*hari/i);
+    if (hariMatch){
+      return 'Estimasi terpenuhi: <strong>~' + hariMatch[1] + ' hari lagi</strong>';
+    }
+    if (/cukup|ready|siap|tersedia/i.test(teks)){
+      return '✅ <strong>Stok siap</strong>, bisa langsung diproses.';
+    }
+    // fallback: buang saja bagian yang menyebut jumlah butir, sisanya tetap ditampilkan
+    return teks
+      .replace(/\(?kekurangan\s+[\d.,]+\s*butir[^)]*\)?/gi, '')
+      .replace(/,?\s*kurang\s*:\s*[\d.,]+\s*butir/gi, '')
+      .trim();
   }
 
   function isApiConfigured(){
@@ -1110,8 +1161,44 @@ NIP. 198404232012121001
     });
   }
 
+  // LANGKAH 1: cek ketersediaan/estimasi saja. Belum mengirim apa pun ke server.
+  async function cekEstimasiForm(){
+    const nama = document.getElementById('of-nama').value.trim();
+    const wa = document.getElementById('of-wa').value.trim();
+    const jumlah = parseInt(document.getElementById('of-jumlah').value, 10) || 0;
+
+    if (!nama){ showOfResult('err', 'Nama pembeli wajib diisi.'); return; }
+    if (!wa || wa.replace(/[^0-9+]/g,'').length < 8){ showOfResult('err', 'No. WhatsApp wajib diisi dengan benar (ini satu-satunya cara 4R Farm menghubungi Anda untuk konfirmasi).'); return; }
+    if (jumlah <= 0){ showOfResult('err', 'Jumlah pesanan tidak valid.'); return; }
+
+    const btn = document.getElementById('of-check-btn');
+    btn.disabled = true;
+    btn.textContent = 'Mengecek estimasi...';
+    showOfResult('pending', 'Menghitung estimasi ketersediaan stok...');
+
+    const estimasi = await ambilEstimasi(ofJenisAktif, jumlah, ofSatuanAktif);
+    if (!estimasi.ok){
+      showOfResult('err', 'Gagal mengambil estimasi: ' + (estimasi.error || 'terjadi kesalahan') + '. Coba lagi sebentar lagi.');
+      btn.disabled = false; btn.textContent = '🔍 Cek Ketersediaan & Estimasi';
+      return;
+    }
+
+    ofEstimasiData = estimasi.data;
+    ofSudahCekEstimasi = true;
+    btn.disabled = false;
+    btn.textContent = '🔍 Cek Ketersediaan & Estimasi';
+    showOfResult('ok', '📋 ' + ringkasEstimasiUntukPembeli(estimasi.data.estimasiTeks));
+    document.getElementById('of-submit-btn').style.display = 'block';
+  }
+
+  // LANGKAH 2: baru di sini pesanan benar-benar dikirim ke server, setelah pembeli
+  // melihat estimasi dan sengaja menekan "Pesan Sekarang".
   async function submitOrderForm(){
     if (ofSudahKirim) return; // cegah klik ganda setelah berhasil kirim
+    if (!ofSudahCekEstimasi || !ofEstimasiData){
+      showOfResult('err', 'Silakan cek ketersediaan & estimasi dahulu sebelum memesan.');
+      return;
+    }
 
     const nama = document.getElementById('of-nama').value.trim();
     const wa = document.getElementById('of-wa').value.trim();
@@ -1124,18 +1211,8 @@ NIP. 198404232012121001
 
     const btn = document.getElementById('of-submit-btn');
     btn.disabled = true;
-    btn.textContent = 'Mengecek estimasi...';
-    showOfResult('pending', 'Menghitung estimasi ketersediaan stok...');
-
-    const estimasi = await ambilEstimasi(ofJenisAktif, jumlah, ofSatuanAktif);
-    if (!estimasi.ok){
-      showOfResult('err', 'Gagal mengambil estimasi: ' + (estimasi.error || 'terjadi kesalahan') + '. Coba lagi sebentar lagi.');
-      btn.disabled = false; btn.textContent = 'Cek Estimasi & Kirim Pesanan';
-      return;
-    }
-
     btn.textContent = 'Mengirim pesanan...';
-    showOfResult('pending', '📋 ' + estimasi.data.estimasiTeks + '<br><br>Mengirim pesanan ke 4R Farm...');
+    showOfResult('pending', '📋 ' + ringkasEstimasiUntukPembeli(ofEstimasiData.estimasiTeks) + '<br><br>Mengirim pesanan ke 4R Farm...');
 
     const terkirim = await kirimOrder({
       nama: nama,
@@ -1148,12 +1225,13 @@ NIP. 198404232012121001
 
     if (terkirim){
       ofSudahKirim = true;
+      document.getElementById('of-check-btn').style.display = 'none';
       btn.textContent = 'Pesanan Terkirim ✓';
-      showOfResult('ok', '✅ Pesanan diterima.<br>📋 ' + estimasi.data.estimasiTeks +
+      showOfResult('ok', '✅ Pesanan diterima.<br>📋 ' + ringkasEstimasiUntukPembeli(ofEstimasiData.estimasiTeks) +
         '<br><br>4R Farm akan menghubungi Anda lewat WhatsApp (' + wa + ') untuk konfirmasi sebelum pesanan masuk antrian produksi.');
     } else {
       btn.disabled = false;
-      btn.textContent = 'Cek Estimasi & Kirim Pesanan';
+      btn.textContent = '✅ Pesan Sekarang';
       showOfResult('err', 'Gagal mengirim pesanan. Coba lagi, atau hubungi 4R Farm langsung lewat WhatsApp.');
     }
   }
