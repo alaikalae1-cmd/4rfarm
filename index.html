@@ -1290,7 +1290,11 @@ NIP. 198404232012121001
     if (!teks) return '';
     const hariMatch = teks.match(/(\d+)\s*hari/i);
     if (hariMatch){
-      return 'Estimasi terpenuhi: <strong>~' + hariMatch[1] + ' hari lagi</strong>';
+      return `
+📦 <strong>Estimasi siap kirim</strong>
+<strong>± ${hariMatch[1]} hari</strong><br>
+🥚 Fresh langsung dari kandang, dipanen mendekati jadwal pengiriman.
+`;
     }
     if (/cukup|ready|siap|tersedia/i.test(teks)){
       return '✅ <strong>Stok siap</strong>, bisa langsung diproses.';
